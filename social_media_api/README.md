@@ -1,167 +1,321 @@
-# 📱 Social Media API – Django REST Framework
+# Social Media API
 
-A backend API for a social media platform built with **Django** and **Django REST Framework (DRF)**.  
-It supports **user authentication (JWT)**, **CRUD for posts & comments**, **likes**, **follow system**, and a personalized **feed**.
+A comprehensive backend API for a social media platform built with Django and Django REST Framework. This project provides a complete foundation for building modern social media applications with user authentication, content management, and social interactions.
 
----
+## Table of Contents
 
-## 🚀 Features
+- [Features](#features)
+- [Technology Stack](#technology-stack)
+- [API Endpoints](#api-endpoints)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [Authentication](#authentication)
+- [Media Handling](#media-handling)
+- [Testing](#testing)
+- [Contributing](#contributing)
+- [License](#license)
 
-### **Authentication**
-- User registration with secure password hashing.
-- JWT authentication (login & token refresh).
-- Only authenticated users can create, update, or delete their own content.
+## Features
 
-### **Post Management (CRUD)**
-- Create, read, update, and delete posts.
-- Supports text content and optional media uploads.
-- Counts total likes & comments for each post.
+### Core Functionality
 
-### **Comments (CRUD)**
-- Add comments to posts.
-- Update or delete only your own comments.
+- **User Authentication & Authorization**
+  - Secure user registration with password hashing
+  - JWT-based authentication with token refresh
+  - Role-based access control for content management
 
-### **Likes**
-- Toggle like/unlike for posts with a single endpoint.
-- Prevents duplicate likes from the same user.
+- **Content Management**
+  - Full CRUD operations for posts and comments
+  - Rich media support (images, videos)
+  - Real-time engagement metrics (likes, comments count)
 
-### **Follow System**
-- Toggle follow/unfollow other users.
-- Cannot follow yourself.
+- **Social Features**
+  - Follow/unfollow system with user relationships
+  - Personalized feed algorithm
+  - Like/unlike functionality with duplicate prevention
 
-### **Feed**
-- Personalized feed of posts from users you follow.
-- Ordered by most recent posts.
-- Paginated for efficiency.
+- **Performance & Scalability**
+  - Paginated API responses
+  - Optimized database queries
+  - RESTful API design principles
 
----
+## Technology Stack
 
-## 🗂 API Endpoints
+- **Backend Framework**: Django 5.0+
+- **API Framework**: Django REST Framework 3.15+
+- **Authentication**: JWT (djangorestframework-simplejwt 5.3+)
+- **Media Processing**: Pillow 10.0+
+- **Database**: SQLite (default) / PostgreSQL (recommended for production)
 
-| Endpoint                     | Method | Description |
-|------------------------------|--------|-------------|
-| `/api/register/`             | POST   | Create a new user |
-| `/api/login/`                | POST   | Authenticate and return JWT token |
-| `/api/token/refresh/`        | POST   | Refresh JWT token |
-| `/api/posts/`                | GET, POST | List all posts / Create a new post |
-| `/api/posts/<id>/`           | GET, PUT, DELETE | Retrieve, update, or delete a post |
-| `/api/comments/`             | GET, POST | List all comments / Create a new comment |
-| `/api/comments/<id>/`        | GET, PUT, DELETE | Retrieve, update, or delete a comment |
-| `/api/likes/`                | POST   | Like or unlike a post |
-| `/api/follow/`               | POST   | Follow or unfollow a user |
-| `/api/feed/`                 | GET    | View posts from followed users |
+## API Endpoints
 
----
+### Authentication
+| Endpoint | Method | Description | Authentication |
+|----------|---------|-------------|----------------|
+| `/api/register/` | POST | User registration | Public |
+| `/api/login/` | POST | User login | Public |
+| `/api/token/refresh/` | POST | Refresh JWT token | Public |
 
-## 🛠 Installation & Setup
+### Posts
+| Endpoint | Method | Description | Authentication |
+|----------|---------|-------------|----------------|
+| `/api/posts/` | GET | List all posts | Optional |
+| `/api/posts/` | POST | Create new post | Required |
+| `/api/posts/<id>/` | GET | Retrieve specific post | Optional |
+| `/api/posts/<id>/` | PUT | Update post | Required (Owner) |
+| `/api/posts/<id>/` | DELETE | Delete post | Required (Owner) |
 
-### **1️⃣ Clone the Repository**
+### Comments
+| Endpoint | Method | Description | Authentication |
+|----------|---------|-------------|----------------|
+| `/api/comments/` | GET | List all comments | Optional |
+| `/api/comments/` | POST | Create new comment | Required |
+| `/api/comments/<id>/` | GET | Retrieve specific comment | Optional |
+| `/api/comments/<id>/` | PUT | Update comment | Required (Owner) |
+| `/api/comments/<id>/` | DELETE | Delete comment | Required (Owner) |
 
-```bash
-git clone https://github.com/Justsmtp/social-media-api.git
-cd social-media-api
+### Social Features
+| Endpoint | Method | Description | Authentication |
+|----------|---------|-------------|----------------|
+| `/api/likes/` | POST | Toggle like/unlike post | Required |
+| `/api/follow/` | POST | Toggle follow/unfollow user | Required |
+| `/api/feed/` | GET | Personalized user feed | Required |
 
-2️⃣ Create a Virtual Environment
-python -m venv venv
-source venv/bin/activate   # Linux/Mac
-venv\Scripts\activate      # Windows
+## Installation
 
-3️⃣ Install Dependencies
-pip install -r requirements.txt
+### Prerequisites
 
-4️⃣ Configure Database & Settings
-Create a .env file in the root directory:
+- Python 3.8+
+- pip (Python package manager)
+- Git
 
-SECRET_KEY=your_secret_key
-DEBUG=True
-ALLOWED_HOSTS=*
+### Step-by-Step Setup
 
-In settings.py, ensure:
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Justsmtp/social-media-api.git
+   cd social-media-api
+   ```
 
+2. **Create and activate virtual environment**
+   ```bash
+   # Create virtual environment
+   python -m venv venv
+   
+   # Activate virtual environment
+   # On Windows
+   venv\Scripts\activate
+   
+   # On macOS/Linux
+   source venv/bin/activate
+   ```
+
+3. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Environment configuration**
+   Create a `.env` file in the project root:
+   ```env
+   SECRET_KEY=your-secret-key-here
+   DEBUG=True
+   ALLOWED_HOSTS=localhost,127.0.0.1
+   DATABASE_URL=sqlite:///db.sqlite3
+   ```
+
+5. **Database setup**
+   ```bash
+   # Create and apply migrations
+   python manage.py makemigrations
+   python manage.py migrate
+   
+   # Create superuser account
+   python manage.py createsuperuser
+   ```
+
+6. **Run the development server**
+   ```bash
+   python manage.py runserver
+   ```
+
+The API will be available at `http://localhost:8000/api/`
+
+## Configuration
+
+### Django Settings
+
+Ensure your `settings.py` includes:
+
+```python
+# Custom user model
 AUTH_USER_MODEL = 'api.User'
+
+# Media files configuration
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-5️⃣ Apply Migrations
-python manage.py makemigrations
-python manage.py migrate
-
-6️⃣ Create Superuser
-python manage.py createsuperuser
-
-7️⃣ Run the Server
-python manage.py runserver
-
-📦 Requirements
-Django >= 5.0
-
-djangorestframework >= 3.15
-
-djangorestframework-simplejwt >= 5.3
-
-Pillow >= 10.0
-
-🔑 Authentication
-This project uses JWT (JSON Web Token) for authentication.
-
-Login Example
-Request
-
-POST /api/login/
-{
-  "username": "john",
-  "password": "123456"
-}
-
-Response
-{
-  "refresh": "your_refresh_token",
-  "access": "your_access_token"
-}
-Include the access token in headers for protected endpoints:
-
-Authorization: Bearer your_access_token
-📤 Media Uploads
-Posts and profile pictures support image uploads.
-
-Files are stored in the /media/ directory (configurable in settings.py).
-
-📜 Pagination
-Feed results are paginated:
-
+# REST Framework configuration
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
 }
-🧪 Example Workflow
-Register a user → /api/register/
+```
 
-Login to get JWT token → /api/login/
+### JWT Configuration
 
-Create a post → /api/posts/ (Authenticated)
+```python
+from datetime import timedelta
 
-Comment on a post → /api/comments/
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+}
+```
 
-Like/unlike a post → /api/likes/
+## Usage
 
-Follow/unfollow a user → /api/follow/
+### Authentication Flow
 
-View your feed → /api/feed/
+1. **Register a new user**
+   ```bash
+   curl -X POST http://localhost:8000/api/register/ \
+     -H "Content-Type: application/json" \
+     -d '{
+       "username": "john_doe",
+       "email": "john@example.com",
+       "password": "secure_password123"
+     }'
+   ```
 
-📌 Next Improvements (Stretch Goals)
-Notifications (likes, comments, follows).
+2. **Login to get JWT tokens**
+   ```bash
+   curl -X POST http://localhost:8000/api/login/ \
+     -H "Content-Type: application/json" \
+     -d '{
+       "username": "john_doe",
+       "password": "secure_password123"
+     }'
+   ```
 
-Hashtags & mentions.
+3. **Use access token for authenticated requests**
+   ```bash
+   curl -X POST http://localhost:8000/api/posts/ \
+     -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "content": "My first post!"
+     }'
+   ```
 
-Repost & share features.
+### Example Workflow
 
-AWS S3 for media storage.
+1. Register and authenticate users
+2. Create posts with text and media content
+3. Add comments to engage with posts
+4. Like posts to show appreciation
+5. Follow other users to build connections
+6. View personalized feed with posts from followed users
 
-Trending posts.
+## Authentication
 
-👨‍💻 Author
-Oladimeji Toba
+This API uses JWT (JSON Web Token) for stateless authentication:
 
-GitHub: Justsmtp
+- **Access tokens** are short-lived (1 hour default) for API requests
+- **Refresh tokens** are longer-lived (7 days default) for obtaining new access tokens
+- Include access token in request headers: `Authorization: Bearer <token>`
 
-LinkedIn: Oladimeji Toba
+### Token Refresh Example
+
+```bash
+curl -X POST http://localhost:8000/api/token/refresh/ \
+  -H "Content-Type: application/json" \
+  -d '{"refresh": "YOUR_REFRESH_TOKEN"}'
+```
+
+## Media Handling
+
+- **Supported formats**: JPEG, PNG, GIF, MP4, MOV
+- **Storage location**: `/media/` directory (configurable)
+- **File validation**: Automatic format and size validation
+- **Production recommendation**: Use cloud storage (AWS S3, Google Cloud Storage)
+
+## Testing
+
+Run the test suite:
+
+```bash
+# Run all tests
+python manage.py test
+
+# Run tests with coverage
+pip install coverage
+coverage run --source='.' manage.py test
+coverage report
+```
+
+## Development
+
+### Code Style
+
+This project follows:
+- PEP 8 Python style guide
+- Django coding conventions
+- RESTful API design principles
+
+### Database Schema
+
+Key models include:
+- **User**: Extended Django user model
+- **Post**: User-generated content with metadata
+- **Comment**: Nested comments on posts
+- **Like**: User-post relationship for likes
+- **Follow**: User-user relationship for follows
+
+## Future Enhancements
+
+- [ ] Real-time notifications system
+- [ ] Hashtag and mention functionality
+- [ ] Advanced search and filtering
+- [ ] Content moderation tools
+- [ ] Analytics and reporting
+- [ ] Mobile app integration
+- [ ] Third-party OAuth integration
+- [ ] Caching layer for improved performance
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Author
+
+**Oladimeji Toba**
+- GitHub: [@Justsmtp](https://github.com/Justsmtp)
+- LinkedIn: [Oladimeji Toba](https://linkedin.com/in/oladimeji-toba)
+
+## Support
+
+If you have any questions or need help with setup, please:
+1. Check the [Issues](https://github.com/Justsmtp/social-media-api/issues) page
+2. Create a new issue with detailed information
+3. Contact the author through GitHub or LinkedIn
+
+---
+
+⭐ **If you found this project helpful, please consider giving it a star!**
