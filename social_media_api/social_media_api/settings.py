@@ -16,14 +16,18 @@ import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Load from environment for production safety
-SECRET_KEY = os.environ.get("SECRET_KEY", "change-me-locally-and-set-in-prod")
-DEBUG = os.environ.get("DEBUG", "True").lower() in ("true", "1", "yes")
+# Get DEBUG first
+DEBUG = os.environ.get("DEBUG", "False").lower() in ("true", "1")
 
-# ALLOWED_HOSTS should be set in the environment (comma separated)
-ALLOWED_HOSTS = [h.strip() for h in os.environ.get("ALLOWED_HOSTS", "").split(",") if h.strip()]
+# Get SECRET_KEY
+SECRET_KEY = os.environ.get("SECRET_KEY")
+if not SECRET_KEY and not DEBUG:
+    raise RuntimeError("SECRET_KEY must be set in production")
+
+# Get ALLOWED_HOSTS
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
 if not ALLOWED_HOSTS and not DEBUG:
-    raise RuntimeError("ALLOWED_HOSTS must be set in production environment")
+    raise RuntimeError("ALLOWED_HOSTS must be set in production")
 
 # Application definition
 INSTALLED_APPS = [
@@ -49,7 +53,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",  # serve static assets
+    "whitenoise.middleware.WhiteNoiseMiddleware",  
     "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -78,7 +82,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "social_media_api.wsgi.application"
 
-# Database: prefer DATABASE_URL, else use sqlite for local dev
+# Database
 DATABASE_URL = os.environ.get("DATABASE_URL")
 if DATABASE_URL:
     DATABASES = {"default": dj_database_url.parse(DATABASE_URL, conn_max_age=600)}
@@ -136,7 +140,7 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": int(os.environ.get("PAGE_SIZE", 10)),
 }
 
-# Simple JWT settings (short access, optional refresh)
+# Simple JWT settings
 from rest_framework_simplejwt.settings import api_settings as jwt_api_settings
 
 SIMPLE_JWT = {
@@ -147,12 +151,12 @@ SIMPLE_JWT = {
     "BLACKLIST_AFTER_ROTATION": True,
 }
 
-# CORS - tune in production to specific origins
+# CORS 
 CORS_ALLOW_ALL_ORIGINS = os.environ.get("CORS_ALLOW_ALL", "True").lower() in ("true", "1", "yes")
 if not CORS_ALLOW_ALL_ORIGINS:
     CORS_ALLOWED_ORIGINS = [o.strip() for o in os.environ.get("CORS_ALLOWED_ORIGINS", "").split(",") if o.strip()]
 
-# Security (adjust/enable additional settings in production)
+# Security 
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     SESSION_COOKIE_SECURE = True
@@ -162,7 +166,7 @@ if not DEBUG:
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
 
-# Logging: basic production-ready setup
+# Logging
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
