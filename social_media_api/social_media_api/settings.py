@@ -16,18 +16,17 @@ import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Get DEBUG first
-DEBUG = os.environ.get("DEBUG", "False").lower() in ("true", "1")
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "unsafe-secret-key")
 
-# Get SECRET_KEY
-SECRET_KEY = os.environ.get("SECRET_KEY")
-if not SECRET_KEY and not DEBUG:
-    raise RuntimeError("SECRET_KEY must be set in production")
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = os.getenv("DJANGO_DEBUG", "False") == "True"
 
-# Get ALLOWED_HOSTS
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
-if not ALLOWED_HOSTS and not DEBUG:
-    raise RuntimeError("ALLOWED_HOSTS must be set in production")
+DEBUG = False
+
+
+# PythonAnywhere username must be in allowed hosts
+ALLOWED_HOSTS = ["justsmtp.pythonanywhere.com", "127.0.0.1", "localhost"]
 
 # Application definition
 INSTALLED_APPS = [
