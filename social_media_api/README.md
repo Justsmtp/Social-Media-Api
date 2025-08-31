@@ -1,7 +1,7 @@
 # Social Media API - Capstone Project
 
 ## 🌐 Live Deployment
-**Production API Base URL**: `https://justsmtp.pythonanywhere.com/api/`
+**Production API Base URL**: `https://justsmtp.pythonanywhere.com`
 
 ## Project Overview
 
